@@ -22,4 +22,11 @@ public:
     ofEasyCam cam;
     
     ofxStreetView streetview;
+    
+    //db hack nov 2017
+    ofLight worldLight;
+    ofMesh mesh;
+    
+    bool b_drawPointCloud;
+    
 };
