@@ -16,6 +16,10 @@ void ofApp::setup(){
     
     b_drawPointCloud, b_enableLight = false;
     
+     fileName = "streetmesh" + ofGetTimestampString() + ".obj";
+    cout << fileName << endl;
+
+    obj.open(ofToDataPath(fileName),ofFile::WriteOnly);
     
 }
 
@@ -91,17 +95,16 @@ void ofApp::keyReleased(int key){
             
             case 's':
             case 'S':
-            string name = "streetmesh" + ofGetTimestampString() + ".obj";
-            cout << name << endl;
-            exportOBJ(mesh, name);
+            
+        exportOBJ();
     }
     
 }
 
 //-----------------
-void exportOBJ(ofMesh mesh, string name){
-     ofFile obj;
-    obj.open(ofToDataPath(name),ofFile::WriteOnly);
+void ofApp::exportOBJ(){
+
+    //obj.open(ofToDataPath(name),ofFile::WriteOnly);
     obj << "#vertices\n";
     for(int i = 0 ; i < mesh.getNumVertices(); i++) {
         ofVec3f v = mesh.getVertex(i);
@@ -112,7 +115,7 @@ void exportOBJ(ofMesh mesh, string name){
         obj << "f " + ofToString(mesh.getIndex(i)) + " " + ofToString(mesh.getIndex(i+1)) + " " + ofToString(mesh.getIndex(i+2)) + "\n";
     obj << "\n";
     obj.close();
-    cout << "wrote " << name << endl;
+    cout << "wrote obj file"  << endl;
 }
 
 //--------------------------------------------------------------
