@@ -60,7 +60,7 @@ void ofApp::draw(){
     ofSetColor( 255, 255, 255);  //set render colour for unpainted points, faces and lines
     mesh.draw();
     glDisable(GL_DEPTH_TEST);
-    mesh.clear();
+   // mesh.clear();
     ofPopMatrix();
     }
     cam.end();
@@ -96,16 +96,17 @@ void ofApp::keyReleased(int key){
             case 's':
             case 'S':
             
-        exportOBJ();
+        exportOBJ(mesh);
     }
     
 }
 
 //-----------------
-void ofApp::exportOBJ(){
+void ofApp::exportOBJ(ofMesh &mesh){
 
     //obj.open(ofToDataPath(name),ofFile::WriteOnly);
     obj << "#vertices\n";
+    
     for(int i = 0 ; i < mesh.getNumVertices(); i++) {
         ofVec3f v = mesh.getVertex(i);
         obj << "v " + ofToString(v.x) + " " + ofToString(v.y) + " " + ofToString(v.z) + "\n";

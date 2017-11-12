@@ -27,7 +27,7 @@ public:
     ofLight worldLight;
     ofMesh mesh;
     ofFile obj;
-    void exportOBJ();
+    void exportOBJ(ofMesh &mesh);
     bool b_drawPointCloud, b_enableLight;
     string fileName;
 };
