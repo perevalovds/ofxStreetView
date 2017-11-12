@@ -26,7 +26,7 @@ public:
     //db hack nov 2017
     ofLight worldLight;
     ofMesh mesh;
-    
-    bool b_drawPointCloud;
-    
+    void exportOBJ(ofMesh mesh, string name);
+    bool b_drawPointCloud, b_enableLight;
+    //ofFile obj;
 };

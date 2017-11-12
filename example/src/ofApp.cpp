@@ -5,12 +5,16 @@ void ofApp::setup(){
     ofSetVerticalSync(true);
     ofEnableDepthTest();
     
-    streetview.setLatLon(40.75732,-73.985951);  // Time Sq
+    //streetview.setLatLon(40.75732,-73.985951);  // Time Sq
    //streetview.setLatLon(40.768153,-73.981473); // Columbus Circus
-    //streetview.setLatLon(40.751511,-73.993953);  // Penn Station
+   // streetview.setLatLon(40.751511,-73.993953);  // Penn Station
+    
+    //streetview.setLatLon(22.276499,114.1735439); // wanchai MTR hong kong;
+    
+    streetview.setLatLon( 51.462088,-2.5901384 ); //stokes croft
     streetview.setZoom(3);
     
-    b_drawPointCloud = true;
+    b_drawPointCloud, b_enableLight = false;
     
     
 }
@@ -28,7 +32,7 @@ void ofApp::update(){
 void ofApp::draw(){
     ofBackground(0);
     
-    worldLight.enable();
+    if (b_enableLight) worldLight.enable();
     cam.begin();
     
     if (b_drawPointCloud) {
@@ -79,8 +83,36 @@ void ofApp::keyReleased(int key){
         case 'F':
             ofToggleFullscreen();
             break;
+            
+        case 'l':
+        case 'L':
+            b_enableLight = !b_enableLight;
+            break;
+            
+            case 's':
+            case 'S':
+            string name = "streetmesh" + ofGetTimestampString() + ".obj";
+            cout << name << endl;
+            exportOBJ(mesh, name);
     }
     
+}
+
+//-----------------
+void exportOBJ(ofMesh mesh, string name){
+     ofFile obj;
+    obj.open(ofToDataPath(name),ofFile::WriteOnly);
+    obj << "#vertices\n";
+    for(int i = 0 ; i < mesh.getNumVertices(); i++) {
+        ofVec3f v = mesh.getVertex(i);
+        obj << "v " + ofToString(v.x) + " " + ofToString(v.y) + " " + ofToString(v.z) + "\n";
+    }
+    obj << "#faces\n";
+    for(int i = 0 ; i < mesh.getNumIndices(); i += 3)
+        obj << "f " + ofToString(mesh.getIndex(i)) + " " + ofToString(mesh.getIndex(i+1)) + " " + ofToString(mesh.getIndex(i+2)) + "\n";
+    obj << "\n";
+    obj.close();
+    cout << "wrote " << name << endl;
 }
 
 //--------------------------------------------------------------
