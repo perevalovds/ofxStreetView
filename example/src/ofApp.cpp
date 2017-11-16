@@ -5,13 +5,15 @@ void ofApp::setup(){
     ofSetVerticalSync(true);
     ofEnableDepthTest();
     
-    //streetview.setLatLon(40.75732,-73.985951);  // Time Sq
+    streetview.setLatLon(40.75732,-73.985951);  // Time Sq
    //streetview.setLatLon(40.768153,-73.981473); // Columbus Circus
    // streetview.setLatLon(40.751511,-73.993953);  // Penn Station
     
     //streetview.setLatLon(22.276499,114.1735439); // wanchai MTR hong kong;
     
-    streetview.setLatLon( 51.462088,-2.5901384 ); //stokes croft
+   // streetview.setLatLon( 51.462088,-2.5901384 ); //stokes croft
+   // streetview.setLatLon( 50.7530769,5.6964121 ); //liege netherlands border post
+     // streetview.setLatLon( 50.7531791,5.6960133 ); //liege netherlands border post  2
     streetview.setZoom(3);
     
     b_drawPointCloud, b_enableLight = false;
