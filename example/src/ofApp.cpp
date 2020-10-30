@@ -3,14 +3,13 @@
 //--------------------------------------------------------------
 void ofApp::setup() {
 	ofSetVerticalSync(true);
-	ofEnableDepthTest();
 
 	//streetview.setLatLon(56.8251529, 60.6447997);  // Yekaterinburg
 	
 	//streetview.setLatLon(40.714867, -73.975910);  //
 
 	//streetview.setLatLon(40.7577034, -73.9854863);  // Time Sq
-	//streetview.setLatLon(40.75732,-73.985951);  // Time Sq
+   //streetview.setLatLon(40.75732,-73.985951);  // Time Sq
    streetview.setLatLon(40.768153,-73.981473); // Columbus Circus
    // streetview.setLatLon(40.751511,-73.993953);  // Penn Station
 
@@ -34,9 +33,6 @@ void ofApp::setup() {
 //--------------------------------------------------------------
 void ofApp::update() {
 	streetview.update();
-
-	//streetview.setUseTexture(false);
-
 	mesh = streetview.getDepthMesh();
 }
 
@@ -47,8 +43,17 @@ void ofApp::draw() {
 	if (b_enableLight) worldLight.enable();
 	cam.begin();
 
+	ofPushMatrix();
+
+	//I move and scale a bit - but for precise view please implement your positioning instead ofEasyCam
+	float scl = 25;			//initial scale
+	ofScale(scl, scl, scl);
+	ofRotateX(-85);		//rotation
+
+
 	if (b_drawPointCloud) {
 		ofEnableDepthTest();
+		
 		streetview.draw();
 		ofDisableDepthTest();
 	}
@@ -74,6 +79,8 @@ void ofApp::draw() {
 		// mesh.clear();
 		ofPopMatrix();
 	}
+
+	ofPopMatrix();
 	cam.end();
 	worldLight.disable();
 

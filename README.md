@@ -2,13 +2,28 @@
 This is version by Denis Perevalov, with support by https://github.com/hugodrummond
 It works in openFrameworks 10.1, Windows.
 
-It contains two examples:
-* basic "example" - show Google street panoram with depth; after start please scroll mouse wheel to be in the center of the sphere. 
-* additional "streetView" example from https://github.com/danbz/streetView, in beta stage (can crash)
+It contains "example" project, which shows Google street panoram with depth.
+After start please scroll mouse wheel to be in the center of the sphere.
+Press 's' to save depth and panoramic image to bin/data.
+ 
+
+
+[ ![Washington Sq](https://farm6.staticflickr.com/5498/13923612140_0abfc6c758_b_d.jpg) ](http://patriciogonzalezvivo.com/2014/pointcloudcity/wash-sq/)
+
+
+Also, there is additional "streetView" example from https://github.com/danbz/streetView. It's in beta stage (can crash)
+
 
 ## Additional addons requirements
 * ofxIO - please use https://github.com/perevalovds/ofxIO
 * ofxGeo - required for "streetView" example please use https://github.com/perevalovds/ofxGeo
+
+## Note about panoramic view control
+
+Currently example uses ofEasyCam (left/right/wheel) for positioning, double click for reset.
+It's simple to implement, but not so precise as should to be.
+So, for perfect view please implement your positioning instead ofEasyCam.
+   
 
 
 ## Original addon remarks:
