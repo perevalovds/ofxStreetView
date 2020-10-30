@@ -1,20 +1,34 @@
 # ofxStreetView
-This is version by Denis Perevalov, with support by https://github.com/hugodrummond
-It works in openFrameworks 10.1, Windows.
+Addon for getting panoramic and depth data from Google Street View for a given position and render it in openFrameworks.
 
-It contains "example" project, which shows Google street panoram with depth.
+This is modified version by Denis Perevalov, with support by https://github.com/hugodrummond
+
+## Installing 
+It tested in openFrameworks 10.1, Windows.
+You need the following addons to be installed
+* ofxIO - please use https://github.com/perevalovds/ofxIO
+* ofxGeo - required only for "streetView" example, please use https://github.com/perevalovds/ofxGeo
+
+## Examples
+Addon contains "example" project, which shows Google Street panoram with depth.
 After start please scroll mouse wheel to be in the center of the sphere.
-Press 's' to save depth and panoramic image to bin/data.
- 
+
 [ ![Screenshot](https://raw.githubusercontent.com/perevalovds/ofxStreetView/master/screenshot.jpg)]
 
+Press 's' to save depth and panoramic image to bin/data.
+Press 'p' to see point cloud.
+ 
+(Also, there is additional "streetView" example from https://github.com/danbz/streetView. It's in beta stage, and can crash)
 
-Also, there is additional "streetView" example from https://github.com/danbz/streetView. It's in beta stage (can crash)
+## How to find coordinates of your desired location
+
+Go to google maps, and copy this two values:
+
+[ ![Coordinates](https://raw.githubusercontent.com/perevalovds/ofxStreetView/master/get_coords.jpg)]
+
+Put them into `streetview.setLatLon(XXX, YYY);` at ofApp::setup(). There are already several places to test!
 
 
-## Additional addons requirements
-* ofxIO - please use https://github.com/perevalovds/ofxIO
-* ofxGeo - required for "streetView" example please use https://github.com/perevalovds/ofxGeo
 
 ## Note about panoramic view control
 
