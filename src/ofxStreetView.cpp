@@ -12,7 +12,7 @@
 #include "Poco/Zip/Decompress.h"
 #include "ofxIO.h"
 
-
+//--------------------------------------------------------------------------------
 ofxStreetView::ofxStreetView(){
     clear();
     maxDistance = 200;
@@ -24,16 +24,19 @@ ofxStreetView::ofxStreetView(){
     zoom = 3;
 }
 
+//--------------------------------------------------------------------------------
 ofxStreetView::ofxStreetView(string _pano_id){
     ofxStreetView();
     setPanoId(_pano_id);
 }
 
+//--------------------------------------------------------------------------------
 ofxStreetView::ofxStreetView(double _lat, double _lon){
     ofxStreetView();
     setLatLon(_lat,_lon);
 }
 
+//--------------------------------------------------------------------------------
 ofxStreetView::~ofxStreetView(){
     if(bRegister){
         ofUnregisterURLNotification(this);
@@ -41,6 +44,7 @@ ofxStreetView::~ofxStreetView(){
     }
 }
 
+//--------------------------------------------------------------------------------
 void ofxStreetView::clear(){
     lat = 0;
     lon = 0;
@@ -58,6 +62,7 @@ void ofxStreetView::clear(){
     }
 }
 
+//--------------------------------------------------------------------------------
 void ofxStreetView::setUseTexture(bool _bUseTex){
     if(_bUseTex&&bDataLoaded&&!bPanoLoaded){
         downloadPanorama();
@@ -65,6 +70,7 @@ void ofxStreetView::setUseTexture(bool _bUseTex){
     bTexture = _bUseTex;
 }
 
+//--------------------------------------------------------------------------------
 void ofxStreetView::setLatLon(double _lat, double _lon){
     if(!bRegister){
         ofRegisterURLNotification(this);
@@ -76,6 +82,7 @@ void ofxStreetView::setLatLon(double _lat, double _lon){
     ofLoadURLAsync(data_url);
 }
 
+//--------------------------------------------------------------------------------
 void ofxStreetView::setPanoId(string _pano_id){
     if(!bRegister){
         ofRegisterURLNotification(this);
@@ -90,7 +97,7 @@ void ofxStreetView::setPanoId(string _pano_id){
     }
 }
 
-void ofxStreetView::setZoom(int _zoom){
+/*void ofxStreetView::setZoom(int _zoom){
     zoom = _zoom;
     
 	int w = getWidth();
@@ -104,18 +111,21 @@ void ofxStreetView::setZoom(int _zoom){
         bPanoLoaded = false;
         downloadPanorama();
     }
-}
+}*/
 
+//--------------------------------------------------------------------------------
 void ofxStreetView::urlResponse(ofHttpResponse & response){
     
-    cout << "Status: " << response.status << endl;
     cout << "Request_url: " << response.request.url << endl;
-    
+	cout << "    Status: " << response.status << endl;
+
     if((response.status==200) && (response.request.url == data_url )&& (!bDataLoaded)){
         panoImages.clear();
         
         ofxXmlSettings  XML;
         XML.loadFromBuffer(response.data);
+
+		//cout << "XML ---------: " << response.data << endl;
         
         pano_id = XML.getAttribute("panorama:data_properties", "pano_id", "");
         
@@ -133,6 +143,28 @@ void ofxStreetView::urlResponse(ofHttpResponse & response){
         if(zoom>num_zoom_levels){
             zoom = num_zoom_levels;
         }
+
+		int w_max = XML.getAttribute("panorama:data_properties", "image_width", 1);
+		int h_max = XML.getAttribute("panorama:data_properties", "image_height", 1);
+		//compute multiplier of zoom level
+		int mult = 1;
+		int zoom_ = zoom;
+		while (zoom_ < num_zoom_levels) {
+			zoom_++;
+			mult *= 2;
+		}
+		//compute pano width and height
+		pano_width_ = w_max / mult;
+		pano_height_ = h_max / mult;
+
+		tile_w = XML.getAttribute("panorama:data_properties", "tile_width", 512);
+		tile_h = XML.getAttribute("panorama:data_properties", "tile_height", 512);
+
+		pano_nx_ = pano_width_ / tile_w;
+		pano_ny_ = pano_height_ / tile_h;
+		cout << "pano size: " << pano_width_ << " x " << pano_height_ << ", tile " << tile_w << " x " << tile_h << endl;
+		cout << "tiles: " << pano_nx_ << " x " << pano_ny_ << endl;
+
         
         pano_yaw_deg = XML.getAttribute("panorama:projection_properties", "pano_yaw_deg", 0.0);
         tilt_yaw_deg = XML.getAttribute("panorama:projection_properties", "tilt_yaw_deg", 0.0);
@@ -221,11 +253,68 @@ void ofxStreetView::urlResponse(ofHttpResponse & response){
         
     } else if(response.request.url.find("http://cbk0.google.com/cbk?output=tile&panoid="+pano_id) == 0){
         ofImage img;
-        img.load(response.data);
+		//if response 400, returns black image
+		//if (response.status == 200) {
+		img.load(response.data);
+		//}
         panoImages.push_back(img);
     }
 }
 
+//--------------------------------------------------------------------------------
+void ofxStreetView::update() {
+	if (bDataLoaded && !bPanoLoaded) {
+
+		//Check if time to create pano and depth image
+
+		int n = panoImages.size();
+		if (n > pano_nx_ * pano_ny_) {
+			ofSystemTextBoxDialog("Loaded too much images for pano: " + ofToString(n));
+			OF_EXIT_APP(0);
+		}
+		if (n == pano_nx_ * pano_ny_) {
+			//Create pano and depth map
+
+			//tile size
+			int w1 = 1;
+			int h1 = 1;
+			for (int i = 0; i < n; i++) {
+				if (panoImages[i].getWidth() > 0) {
+					w1 = panoImages[i].getWidth();
+					h1 = panoImages[i].getHeight();
+					break;
+				}
+			}
+
+			//Create fbo and draw on it
+			panoFbo.allocate(pano_width_, pano_height_, GL_RGB);
+			panoFbo.begin();
+			ofClear(0, 0);
+			for (int y = 0; y < pano_ny_; y++) {
+				for (int x = 0; x < pano_nx_; x++) {
+					int i = x + pano_nx_ * y;
+					if (panoImages[i].getWidth() > 0) {
+						panoImages.at(i).draw(x*w1, y*h1);
+					}
+				}
+			}
+			panoFbo.end();
+
+			//all done, delete images
+			panoImages.clear();
+			bPanoLoaded = true;
+
+			//Create depth
+			if (depth_map_base64 != "") {
+				makeDepthMesh();
+			}
+
+		}
+
+	}
+}
+
+//--------------------------------------------------------------------------------
 void ofxStreetView::downloadPanorama(){
     if(!bPanoLoaded){
         if(pano_id != ""){
@@ -236,12 +325,13 @@ void ofxStreetView::downloadPanorama(){
             }
         }
         
-        if(depth_map_base64 != ""){
-            makeDepthMesh();
-        }
+        //if(depth_map_base64 != ""){
+        //    makeDepthMesh();
+        //}
     }
 }
 
+//--------------------------------------------------------------------------------
 ofImage ofxStreetView::getDepthMap(){
     ofImage depthImage;
     if(bDataLoaded){
@@ -281,6 +371,7 @@ ofImage ofxStreetView::getDepthMap(){
     return depthImage;
 }
 
+//--------------------------------------------------------------------------------
 void ofxStreetView::makeDepthMesh(){
     meshDepth.clear();
     meshDepth.setMode(OF_PRIMITIVE_TRIANGLES);    
@@ -306,6 +397,7 @@ void ofxStreetView::makeDepthMesh(){
     }
 }
 
+//--------------------------------------------------------------------------------
 void ofxStreetView::addVertex(int x, int y){
     float rad_azimuth = x / (float) (mapWidth - 1.0f) * TWO_PI;
     float rad_elevation = y / (float) (mapHeight - 1.0f) * PI;
@@ -339,6 +431,7 @@ void ofxStreetView::addVertex(int x, int y){
     meshDepth.addVertex(pos);
 }
 
+//--------------------------------------------------------------------------------
 string ofxStreetView::getCloseLinkTo(float _deg){
     ofPoint direction = ofPoint(cos(_deg*DEG_TO_RAD),sin(_deg*DEG_TO_RAD));
     
@@ -363,22 +456,26 @@ string ofxStreetView::getCloseLinkTo(float _deg){
     }
 }
 
+//--------------------------------------------------------------------------------
 float ofxStreetView::getGroundHeight(){
     int groundIndex = depthmapIndices[mapHeight * mapWidth - 1];
     return depthmapPlanes[groundIndex].d;
 }
 
+//--------------------------------------------------------------------------------
 float ofxStreetView::getWidth(){
     //1.63;//3.26;//6.52;
     //return mapWidth*(1.63*powf(2.0, zoom-1));
-	return 512 * pano_nx_;	//TODO hardcoded
+	return pano_width_; //512 * pano_nx_;	//TODO hardcoded
 }
 
+//--------------------------------------------------------------------------------
 float ofxStreetView::getHeight(){
     //return mapHeight*(1.63*powf(2.0, zoom-1));
-	return 512 * pano_ny_; //TODO hardcoded
+	return pano_height_; //512 * pano_ny_; //TODO hardcoded
 }
 
+//--------------------------------------------------------------------------------
 ofTexture& ofxStreetView::getTexture(){
     if(!panoFbo.isAllocated()){
         panoFbo.allocate(getWidth(),getHeight());
@@ -387,10 +484,12 @@ ofTexture& ofxStreetView::getTexture(){
     return panoFbo.getTexture();
 }
 
+//--------------------------------------------------------------------------------
 const ofTexture& ofxStreetView::getTexture() const {
 	return getTexture();
 }
 
+//--------------------------------------------------------------------------------
 ofTexture ofxStreetView::getTextureAt(float _deg, float _amp){
     float widthDeg = getWidth()/360.0;
     
@@ -415,42 +514,13 @@ ofTexture ofxStreetView::getTextureAt(float _deg, float _amp){
     return roi.getTexture();
 }
 
-void ofxStreetView::update(){
-    if(bDataLoaded && !bPanoLoaded){
-
-		int n = panoImages.size();
-		//cout << "... panoImages.size() " << n << endl;
-		//if (panoImages.empty()) return;
-		//int w1 = panoImages[0].getWidth();
-		//int h1 = panoImages[0].getHeight();
-		//TODO ...update getWidth, getHeight and panoFbo size
-		panoFbo.begin();
-        ofClear(0,0);
-        int x = 0;
-        int y = 0;
-        for(int i= 0; i < panoImages.size(); i++){
-            panoImages.at(i).draw(x*panoImages.at(i).getWidth(), y*panoImages.at(i).getHeight());
-            if(x < pano_nx_-1){
-                x++;
-            }else{
-                x=0;
-                y++;
-            }
-        }
-        panoFbo.end();
-        
-        if(panoImages.size() >= pano_nx_ * pano_ny_){
-            panoImages.clear();
-            bPanoLoaded = true;
-        }
-    }
-}
-
+//--------------------------------------------------------------------------------
 ofPixels &ofxStreetView::getTexturePixels() {
 	panoFbo.readToPixels(tex_pixels_);
 	return tex_pixels_;
 }
 
+//--------------------------------------------------------------------------------
 void ofxStreetView::draw(){
     ofPushMatrix();
     //ofRotate(getDirection(), 0, 0, 1);
@@ -459,3 +529,5 @@ void ofxStreetView::draw(){
     getTexture().unbind();
     ofPopMatrix();
 }
+
+//--------------------------------------------------------------------------------

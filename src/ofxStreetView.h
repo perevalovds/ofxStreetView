@@ -33,7 +33,7 @@ public:
     
     void        setPanoId(string _pano_id);
     void        setLatLon(double _lat, double _lng);
-    void        setZoom(int _zoom);
+    //void        setZoom(int _zoom);	//for now we disabling setting zoom, suppose it's 3
     
     void        setUseTexture(bool _bUseTex);
     bool        isTextureLoaded(){return bPanoLoaded;};
@@ -68,7 +68,7 @@ public:
     int         getDepthMapHeight(){return mapHeight;}
     ofImage     getDepthMap();
     ofVboMesh&  getDepthMesh(){return meshDepth;};
-    DepthMapPlane getDepthMapAt(int _x, int _y);
+    //DepthMapPlane getDepthMapAt(int _x, int _y);
 
     void        urlResponse(ofHttpResponse & response);
     void        clear();
@@ -81,8 +81,15 @@ public:
     vector<DepthMapPlane> depthmapPlanes;
     
 protected:
+	//max size of tiling for given zoom level (3)
+	//can be 8x4 or 7x3 - requested from XML
 	int pano_nx_ = 8;
 	int pano_ny_ = 4;
+	//size of pano is computed from XML
+	int pano_width_ = 1;	
+	int pano_height_ = 1;
+	int tile_w = 512;
+	int tile_h = 512;
 
     void        downloadPanorama();
     vector<ofImage> panoImages;

@@ -1,4 +1,17 @@
 # ofxStreetView
+This is version by Denis Perevalov, with support by https://github.com/hugodrummond
+It works in openFrameworks 10.1, Windows.
+
+It contains two examples:
+* basic "example" - show Google street panoram with depth; after start please scroll mouse wheel to be in the center of the sphere. 
+* additional "streetView" example from https://github.com/danbz/streetView, in beta stage (can crash)
+
+## Additional addons requirements
+* ofxIO - please use https://github.com/perevalovds/ofxIO
+* ofxGeo - required for "streetView" example please use https://github.com/perevalovds/ofxGeo
+
+
+## Original addon remarks:
 
 Trying to improve the stitching between panoramic views for my [SKYLINES II project](http://patriciogonzalezvivo.com/2014/skylines/) I came across some encrypted depth information inside Google Street View database. This become popularized by the short video [PointCloudCity](http://patriciogonzalezvivo.com/2014/pointcloudcity/) and later become SKYLINE III, a series of postcards revealing the invisible information of a city that is otherwise trapped inside corporate databases, freeing private information collected from public spaces.
 

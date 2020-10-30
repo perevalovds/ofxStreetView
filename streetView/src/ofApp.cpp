@@ -44,7 +44,7 @@ void ofApp::setup(){
     ofxStreetView newStreet;
     streetview.push_back(newStreet);
     streetview[0].setLatLon(viewLat, viewLong);
-    streetview[0].setZoom(3);
+    //streetview[0].setZoom(3);
     
     
     b_drawPointCloud = true;
@@ -58,7 +58,7 @@ void ofApp::setup(){
     // obj.open(ofToDataPath(fileName),ofFile::ReadWrite);
     
     b_updateMesh=false;
-    mesh = streetview[0].getDethMesh();
+    mesh = streetview[0].getDepthMesh();
     
     gui.setup();
     string num;
@@ -320,7 +320,7 @@ void ofApp::loadNewStreet(int direction){
     streetview.push_back(newStreet);
     i = streetview.size()-1;
     streetview[i].setPanoId(newPanoName);
-    streetview[i].setZoom(3);
+    //streetview[i].setZoom(3);
     b_updateMesh=true;
 }
 
@@ -333,7 +333,7 @@ void ofApp::exportOBJ(ofMesh &mesh){
         ofRotateZ(streetview[i].getDirection()+rotOffset[i]);
         ofTranslate(streetview[i].getLon()*longOffset[i], streetview[i].getLat()*latOffset[i], 0);
         streetview[i].getTexture().bind();
-        mesh.append(streetview[i].getDethMesh());
+        mesh.append(streetview[i].getDepthMesh());
         streetview[i].getTexture().unbind();
     }
     
