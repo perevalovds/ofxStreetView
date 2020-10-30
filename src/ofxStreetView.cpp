@@ -162,6 +162,8 @@ void ofxStreetView::urlResponse(ofHttpResponse & response){
 
 		pano_nx_ = pano_width_ / tile_w;
 		pano_ny_ = pano_height_ / tile_h;
+		if (pano_nx_ * tile_w < pano_width_) pano_nx_++;
+		if (pano_ny_ * tile_h < pano_height_) pano_ny_++;
 		cout << "pano size: " << pano_width_ << " x " << pano_height_ << ", tile " << tile_w << " x " << tile_h << endl;
 		cout << "tiles: " << pano_nx_ << " x " << pano_ny_ << endl;
 
