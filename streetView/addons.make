@@ -1,3 +1,5 @@
+ofxGeo
+ofxGui
 ofxIO
 ofxPoco
 ofxStreetView

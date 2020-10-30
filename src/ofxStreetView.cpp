@@ -8,7 +8,10 @@
 #include "ofxStreetView.h"
 
 #include "base64.h"
-#include <zlib.h>
+//#include <zlib.h>
+#include "Poco/Zip/Decompress.h"
+#include "ofxIO.h"
+
 
 ofxStreetView::ofxStreetView(){
     clear();
@@ -159,15 +162,36 @@ void ofxStreetView::urlResponse(ofHttpResponse & response){
             //Decode base64
             vector<unsigned char> depth_map_compressed(depth_map_base64.length());
             int compressed_length = decode_base64(&depth_map_compressed[0], &depth_map_base64[0]);
-            
+			
+			depth_map_compressed.resize(compressed_length);
+
             //Uncompress data with zlib
             //TODO: decompress in a loop so we can accept any size
-            unsigned long length = 512 * 256 + 5000;
-            vector<unsigned char> depth_map(length);
-            int zlib_return = uncompress(&depth_map[0], &length, &depth_map_compressed[0], compressed_length);
-            if (zlib_return != Z_OK)
-                throw "zlib decompression of the depth map failed";
+            //unsigned long length = 512 * 256 + 5000;
+            //vector<unsigned char> depth_map(length);
+
+			//std::string uncompressedString = uncompressed.toString();
+			//int zlib_return = uncompress(&depth_map[0], &length, &depth_map_compressed[0], compressed_length);
+			//if (zlib_return != Z_OK)	
+			//    throw "zlib decompression of the depth map failed";
+
+			
+			ofxIO::ByteBuffer depth_map_compressed_buffer(depth_map_compressed);
+			ofxIO::ByteBuffer depth_map_uncompressed_buffer;
+
+			std::size_t result = ofxIO::Compression::uncompress(depth_map_compressed_buffer, depth_map_uncompressed_buffer, ofxIO::Compression::ZLIB);
+			
+			if (result == 0) {
+				throw "Error uncompressing depth buffer with ZLIB, empty result";
+			}
+
+			const vector<unsigned char> &depth_map = depth_map_uncompressed_buffer.getBuffer();
             
+
+			if (depth_map.size() < 8) {
+				throw "Error uncompressing depth buffer with ZLIB, result too short";
+			}
+
             //Load standard data
             const int headersize = depth_map[0];
             const int numPanos = depth_map[1] | (depth_map[2] << 8);
@@ -413,7 +437,7 @@ void ofxStreetView::update(){
 
 void ofxStreetView::draw(){
     ofPushMatrix();
-    ofRotate(getDirection(), 0, 0, 1);
+    //ofRotate(getDirection(), 0, 0, 1);
     getTexture().bind();
     meshDepth.draw();
     getTexture().unbind();
