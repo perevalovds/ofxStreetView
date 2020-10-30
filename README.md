@@ -6,9 +6,7 @@ It contains "example" project, which shows Google street panoram with depth.
 After start please scroll mouse wheel to be in the center of the sphere.
 Press 's' to save depth and panoramic image to bin/data.
  
-
-
-[ ![Washington Sq](https://farm6.staticflickr.com/5498/13923612140_0abfc6c758_b_d.jpg) ](http://patriciogonzalezvivo.com/2014/pointcloudcity/wash-sq/)
+[ ![Screenshot](https://raw.githubusercontent.com/perevalovds/ofxStreetView/master/screenshot.jpg)]
 
 
 Also, there is additional "streetView" example from https://github.com/danbz/streetView. It's in beta stage (can crash)
