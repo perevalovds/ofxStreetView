@@ -59,13 +59,15 @@ public:
     
     ofTexture&  getTexture();
     const ofTexture& getTexture() const;
+	ofPixels &getTexturePixels();
+
     
     ofTexture   getTextureAt(float _deg, float _amp);
     
     int         getDepthMapWidth(){return mapWidth;}
     int         getDepthMapHeight(){return mapHeight;}
     ofImage     getDepthMap();
-    ofVboMesh&  getDethMesh(){return meshDepth;};
+    ofVboMesh&  getDepthMesh(){return meshDepth;};
     DepthMapPlane getDepthMapAt(int _x, int _y);
 
     void        urlResponse(ofHttpResponse & response);
@@ -79,9 +81,13 @@ public:
     vector<DepthMapPlane> depthmapPlanes;
     
 protected:
+	int pano_nx_ = 8;
+	int pano_ny_ = 4;
+
     void        downloadPanorama();
     vector<ofImage> panoImages;
     ofFbo       panoFbo;
+	ofPixels tex_pixels_;
     
     void        makeDepthMesh();
     void        addVertex(int x, int y);

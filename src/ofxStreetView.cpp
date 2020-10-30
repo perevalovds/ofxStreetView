@@ -93,7 +93,9 @@ void ofxStreetView::setPanoId(string _pano_id){
 void ofxStreetView::setZoom(int _zoom){
     zoom = _zoom;
     
-    panoFbo.allocate(getWidth(),getHeight());
+	int w = getWidth();
+	int h = getHeight();
+    panoFbo.allocate(w,h);
     if(zoom>num_zoom_levels){
         zoom = num_zoom_levels;
     }
@@ -227,8 +229,8 @@ void ofxStreetView::urlResponse(ofHttpResponse & response){
 void ofxStreetView::downloadPanorama(){
     if(!bPanoLoaded){
         if(pano_id != ""){
-            for(int i = 0; i < 3; i++){
-                for(int j = 0; j < 7; j++){
+            for(int i = 0; i < pano_ny_; i++){
+                for(int j = 0; j < pano_nx_; j++){
                     ofLoadURLAsync("http://cbk0.google.com/cbk?output=tile&panoid="+pano_id+"&zoom="+ofToString(zoom)+"&x="+ofToString(j)+"&y="+ofToString(i));
                 }
             }
@@ -368,11 +370,13 @@ float ofxStreetView::getGroundHeight(){
 
 float ofxStreetView::getWidth(){
     //1.63;//3.26;//6.52;
-    return mapWidth*(1.63*powf(2.0, zoom-1));
+    //return mapWidth*(1.63*powf(2.0, zoom-1));
+	return 512 * pano_nx_;	//TODO hardcoded
 }
 
 float ofxStreetView::getHeight(){
-    return mapHeight*(1.63*powf(2.0, zoom-1));
+    //return mapHeight*(1.63*powf(2.0, zoom-1));
+	return 512 * pano_ny_; //TODO hardcoded
 }
 
 ofTexture& ofxStreetView::getTexture(){
@@ -413,13 +417,20 @@ ofTexture ofxStreetView::getTextureAt(float _deg, float _amp){
 
 void ofxStreetView::update(){
     if(bDataLoaded && !bPanoLoaded){
-        panoFbo.begin();
+
+		int n = panoImages.size();
+		//cout << "... panoImages.size() " << n << endl;
+		//if (panoImages.empty()) return;
+		//int w1 = panoImages[0].getWidth();
+		//int h1 = panoImages[0].getHeight();
+		//TODO ...update getWidth, getHeight and panoFbo size
+		panoFbo.begin();
         ofClear(0,0);
         int x = 0;
         int y = 0;
         for(int i= 0; i < panoImages.size(); i++){
             panoImages.at(i).draw(x*panoImages.at(i).getWidth(), y*panoImages.at(i).getHeight());
-            if(x < 6){
+            if(x < pano_nx_-1){
                 x++;
             }else{
                 x=0;
@@ -428,11 +439,16 @@ void ofxStreetView::update(){
         }
         panoFbo.end();
         
-        if(panoImages.size() >= 3*7){
+        if(panoImages.size() >= pano_nx_ * pano_ny_){
             panoImages.clear();
             bPanoLoaded = true;
         }
     }
+}
+
+ofPixels &ofxStreetView::getTexturePixels() {
+	panoFbo.readToPixels(tex_pixels_);
+	return tex_pixels_;
 }
 
 void ofxStreetView::draw(){

@@ -7,9 +7,9 @@ void ofApp::setup() {
 
 
 	//streetview.setLatLon(40.7577034, -73.9854863);  // Time Sq
-	streetview.setLatLon(40.75732,-73.985951);  // Time Sq
+	//streetview.setLatLon(40.75732,-73.985951);  // Time Sq
    //streetview.setLatLon(40.768153,-73.981473); // Columbus Circus
-   // streetview.setLatLon(40.751511,-73.993953);  // Penn Station
+    streetview.setLatLon(40.751511,-73.993953);  // Penn Station
 
 	//streetview.setLatLon(22.276499,114.1735439); // wanchai MTR hong kong;
 
@@ -18,7 +18,8 @@ void ofApp::setup() {
 	 // streetview.setLatLon( 50.7531791,5.6960133 ); //liege netherlands border post  2
 	streetview.setZoom(3);
 
-	b_drawPointCloud, b_enableLight = false;
+	b_drawPointCloud = true;
+	b_enableLight = false;
 
 	//fileName = "streetmesh" + ofGetTimestampString() + ".obj";
 	//cout << fileName << endl;
@@ -33,7 +34,7 @@ void ofApp::update() {
 
 	//streetview.setUseTexture(false);
 
-	mesh = streetview.getDethMesh();
+	mesh = streetview.getDepthMesh();
 }
 
 //--------------------------------------------------------------
@@ -104,9 +105,15 @@ void ofApp::keyReleased(int key) {
 	case 'S':
 	{
 		//save depth map to file
-		string file = "depth.png";
-		cout << "Saving " << file << endl;
-		streetview.getDepthMap().save(file);
+		string depth_file = "depth.png";
+		cout << "Saving " << depth_file << endl;
+		streetview.getDepthMap().save(depth_file);
+
+		//save pano to file
+		string pano_file = "pano.png";
+		cout << "Saving " << pano_file << endl;
+		ofSaveImage(streetview.getTexturePixels(), pano_file);
+
 	}
 
 		//exportOBJ(mesh);
