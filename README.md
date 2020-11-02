@@ -13,7 +13,7 @@ You need the following addons to be installed
 Addon contains "example" project, which shows Google Street panoram with depth.
 After start please scroll mouse wheel to be in the center of the sphere.
 
-[ ![Screenshot](https://raw.githubusercontent.com/perevalovds/ofxStreetView/master/screenshot.jpg)]
+![Screenshot](https://raw.githubusercontent.com/perevalovds/ofxStreetView/master/screenshot.jpg)
 
 Keys:
 * 1,2,3 - switching point, wireframe and fill drawing modes
