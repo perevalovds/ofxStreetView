@@ -15,8 +15,11 @@ After start please scroll mouse wheel to be in the center of the sphere.
 
 [ ![Screenshot](https://raw.githubusercontent.com/perevalovds/ofxStreetView/master/screenshot.jpg)]
 
-Press 's' to save depth and panoramic image to bin/data.
-Press 'p' to see point cloud.
+Keys:
+* 1,2,3 - switching point, wireframe and fill drawing modes
+* s - save depth and panoramic image to bin/data folder.
+* p - toggle to see white point cloud.
+
  
 (Also, there is additional "streetView" example from https://github.com/danbz/streetView. It's in beta stage, and can crash)
 
