@@ -523,11 +523,11 @@ ofPixels &ofxStreetView::getTexturePixels() {
 }
 
 //--------------------------------------------------------------------------------
-void ofxStreetView::draw(){
+void ofxStreetView::draw(ofPolyRenderMode mode){
     ofPushMatrix();
     //ofRotate(getDirection(), 0, 0, 1);
     getTexture().bind();
-    meshDepth.draw();
+    meshDepth.draw(mode);
     getTexture().unbind();
     ofPopMatrix();
 }

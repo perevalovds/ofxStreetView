@@ -50,11 +50,11 @@ void ofApp::draw() {
 	ofScale(scl, scl, scl);
 	ofRotateX(-85);		//rotation
 
-
 	if (b_drawPointCloud) {
 		ofEnableDepthTest();
 		
-		streetview.draw();
+		glPointSize(4);
+		streetview.draw(draw_mode);
 		ofDisableDepthTest();
 	}
 	else {
@@ -93,27 +93,22 @@ void ofApp::keyPressed(int key) {
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key) {
-	switch (key) {
+	//toggle point cloud view
+	if (key == 'p') b_drawPointCloud = !b_drawPointCloud;
 
-	case 'p':
-	case 'P':
-		b_drawPointCloud = !b_drawPointCloud;
-		break;
+	//toggle point, wireframe, fill modes
+	if (key == '1') draw_mode = OF_MESH_POINTS;
+	if (key == '2') draw_mode = OF_MESH_WIREFRAME;
+	if (key == '3') draw_mode = OF_MESH_FILL;
+	
+	//toggle fullscreen
+	if (key == 'f') ofToggleFullscreen();
 
+	//toggle light
+	if (key == 'l') b_enableLight = !b_enableLight;
 
-	case 'f':
-	case 'F':
-		ofToggleFullscreen();
-		break;
-
-	case 'l':
-	case 'L':
-		b_enableLight = !b_enableLight;
-		break;
-
-	case 's':
-	case 'S':
-	{
+	//save depth and panoramic images to PNG files
+	if (key == 's') {
 		//save depth map to file
 		string depth_file = "depth.png";
 		cout << "Saving " << depth_file << endl;
@@ -123,8 +118,6 @@ void ofApp::keyReleased(int key) {
 		string pano_file = "pano.png";
 		cout << "Saving " << pano_file << endl;
 		ofSaveImage(streetview.getTexturePixels(), pano_file);
-
-	}
 
 		//exportOBJ(mesh);
 	}

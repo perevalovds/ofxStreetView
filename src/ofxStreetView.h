@@ -74,7 +74,12 @@ public:
     void        clear();
     
     void        update();
-    void        draw();
+
+	//OF_MESH_POINTS,
+	//OF_MESH_WIREFRAME,
+	//OF_MESH_FILL
+    void  draw(ofPolyRenderMode mode = OF_MESH_FILL);
+
     
     vector<Link> links;
     vector<unsigned char> depthmapIndices;
